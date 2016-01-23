@@ -32,7 +32,6 @@ enablePlugins(JavaServerAppPackaging)
 enablePlugins(DockerPlugin)
 
 bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/server.conf""""
-bashScriptExtraDefines += """addJava""" "-Djava.security.egd=file:/dev/urandom"
 
 packageName in Docker := "actor-push"
 version in Docker := (version in ThisBuild).value
