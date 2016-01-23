@@ -4,7 +4,6 @@ import akka.actor.{ ActorRef, ActorSystem }
 import akka.event.Logging
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.util.FastFuture
 import com.spingo.op_rabbit._
 import com.typesafe.config._
 import im.actor.push.model
