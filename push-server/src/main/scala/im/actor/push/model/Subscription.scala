@@ -7,7 +7,7 @@ import java.util.Base64
 final case class Subscription(appId: Int, id: String) {
   def topic = s"actor.$appId.subscription.$id"
 
-  def endpoint(baseUri: String) = s"$baseUri/v1/apps/$appId/subscriptions/${URLEncoder.encode(id, "UTF-8")}"
+  def endpoint(baseUri: String) = s"$baseUri/apps/$appId/subscriptions/${URLEncoder.encode(id, "UTF-8")}"
 }
 
 object Subscription {

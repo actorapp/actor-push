@@ -25,7 +25,7 @@ final class MessageResource(system: ActorSystem, rabbitControl: ActorRef, db: Da
 
   val log = Logging(system, getClass)
 
-  val route: Route = pathPrefix("v1" / "apps" / IntNumber / "subscription" / Segment) { (appId, subId) ⇒
+  val route: Route = pathPrefix("apps" / IntNumber / "subscription" / Segment) { (appId, subId) ⇒
     (post & entity(as[MessageEntity])) { entity ⇒
       authenticateOAuth2Async("Actor Push", authenticator(appId)) { tokAppId ⇒
         onSuccess(checkSubscription(appId, subId)) {

@@ -21,7 +21,7 @@ final class SubscriptionResource(system: ActorSystem, rabbitControl: ActorRef, d
 
   val baseUri = system.settings.config.getString("base-uri")
 
-  val route: Route = pathPrefix("v1" / "apps" / IntNumber / "subscriptions") { appId ⇒
+  val route: Route = pathPrefix("apps" / IntNumber / "subscriptions") { appId ⇒
     post {
       val subscription = model.Subscription.generate(appId)
       onComplete(subscribe(subscription)) { _ ⇒
