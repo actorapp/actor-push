@@ -3,6 +3,7 @@ package im.actor.push.resource
 import akka.actor.{ ActorRef, ActorSystem }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.util.FastFuture
 import com.spingo.op_rabbit._
 import com.typesafe.config._
 import im.actor.push.model
@@ -49,7 +50,7 @@ final class SubscriptionResource(system: ActorSystem, rabbitControl: ActorRef, d
     pathEndOrSingleSlash {
       post {
         val subscription = model.Subscription.generate(appId)
-        onComplete(subscribe(subscription)) { _ ⇒
+        onSuccess(subscribe(subscription)) {
           complete(Data(SubscribeResult(
             endpoint = subscription.endpoint(baseUri),
             mqtt = mqtt
