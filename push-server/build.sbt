@@ -31,6 +31,8 @@ mainClass in Compile := Some("im.actor.push.PushServer")
 enablePlugins(JavaServerAppPackaging)
 enablePlugins(DockerPlugin)
 
+bashScriptExtraDefines += """addJava "-Dconfig.file=${app_home}/../conf/server.conf""""
+
 packageName in Docker := "actor-push"
 version in Docker := (version in ThisBuild).value
 dockerExposedPorts := Seq(9000)
