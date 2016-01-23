@@ -3,23 +3,47 @@ package im.actor.push.resource
 import akka.actor.{ ActorRef, ActorSystem }
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import im.actor.push.model
 import com.spingo.op_rabbit._
+import com.typesafe.config._
+import im.actor.push.model
 import de.heikoseeberger.akkahttpcirce.CirceSupport
 import im.actor.push.repo.SubscriptionRepo
 import slick.driver.PostgresDriver.api._
 import io.circe.generic.auto._
 import io.circe.syntax._
 
+import scala.collection.JavaConversions._
 import scala.concurrent.Future
 
 final case class Data[T](data: T)
-final case class SubscribeResult(endpoint: String)
+final case class SubscribeResult(
+                                  endpoint: String,
+                                  mqtt: MQTT
+                                )
+final case class MQTT(
+                       hosts: Seq[String],
+                       virtualHost: String,
+                       username: String,
+                       password: String,
+                       port: Int
+                     )
+object MQTT {
+  def fromConfig(config: Config): MQTT = {
+    MQTT(
+      hosts = config.getStringList("op-rabbit.connection.hosts").toSeq,
+      virtualHost = config.getString("op-rabbit.connection.virtual-host"),
+      username = config.getString("op-rabbit.connection.username"),
+      password = config.getString("op-rabbit.connection.password"),
+      port = config.getInt("op-rabbit.connection.port")
+    )
+  }
+}
 
 final class SubscriptionResource(system: ActorSystem, rabbitControl: ActorRef, db: Database) extends CirceSupport {
   import system.dispatcher
 
   val baseUri = system.settings.config.getString("base-uri")
+  val mqtt = MQTT.fromConfig(system.settings.config)
 
   val route: Route = pathPrefix("apps" / IntNumber / "subscriptions") { appId ⇒
     pathEndOrSingleSlash {
@@ -27,7 +51,8 @@ final class SubscriptionResource(system: ActorSystem, rabbitControl: ActorRef, d
         val subscription = model.Subscription.generate(appId)
         onComplete(subscribe(subscription)) { _ ⇒
           complete(Data(SubscribeResult(
-            endpoint = subscription.endpoint(baseUri)
+            endpoint = subscription.endpoint(baseUri),
+            mqtt = mqtt
           )).asJson)
         }
       }
