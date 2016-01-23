@@ -25,22 +25,24 @@ final class MessageResource(system: ActorSystem, rabbitControl: ActorRef, db: Da
 
   val log = Logging(system, getClass)
 
-  val route: Route = pathPrefix("apps" / IntNumber / "subscription" / Segment) { (appId, subId) ⇒
-    (post & entity(as[MessageEntity])) { entity ⇒
-      authenticateOAuth2Async("Actor Push", authenticator(appId)) { tokAppId ⇒
-        onSuccess(checkSubscription(appId, subId)) {
-          case Some(subscription) ⇒
-            if (subscription.appId == tokAppId) {
-              val topicName = subscription.topic
-              rabbitControl ! Message.topic(entity.asJson.noSpaces, routingKey = topicName)
-              complete(StatusCodes.Created)
-            } else {
-              log.warning("Subscription id does not match token id")
-              complete(StatusCodes.Forbidden)
-            }
-          case None ⇒
-            log.warning("Subscription not found")
-            complete(StatusCodes.NotFound)
+  val route: Route = pathPrefix("apps" / IntNumber / "subscriptions" / Segment) { (appId, subId) ⇒
+    pathEndOrSingleSlash {
+      (post & entity(as[MessageEntity])) { entity ⇒
+        authenticateOAuth2Async("Actor Push", authenticator(appId)) { tokAppId ⇒
+          onSuccess(checkSubscription(appId, subId)) {
+            case Some(subscription) ⇒
+              if (subscription.appId == tokAppId) {
+                val topicName = subscription.topic
+                rabbitControl ! Message.topic(entity.asJson.noSpaces, routingKey = topicName)
+                complete(StatusCodes.Created)
+              } else {
+                log.warning("Subscription id does not match token id")
+                complete(StatusCodes.Forbidden)
+              }
+            case None ⇒
+              log.warning("Subscription not found")
+              complete(StatusCodes.NotFound)
+          }
         }
       }
     }

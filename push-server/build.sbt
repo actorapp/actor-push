@@ -12,6 +12,7 @@ val circeV = "0.2.1"
 val slickV = "3.1.1"
 
 libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-slf4j" % "2.4.1",
   "com.typesafe.akka" %% "akka-http-experimental" % "2.0.1",
   "de.heikoseeberger" %% "akka-http-circe" % "1.4.1",
   "io.circe" %% "circe-core" % circeV,
@@ -21,7 +22,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % slickV,
   "com.typesafe.slick" %% "slick-hikaricp" % slickV,
   "org.flywaydb" % "flyway-core" % "3.2.1",
-  "org.postgresql" % "postgresql" % "9.4-1201-jdbc41"
+  "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
+  "ch.qos.logback" % "logback-classic" % "1.1.3"
 )
 
 mainClass in Compile := Some("im.actor.push.PushServer")

@@ -2,10 +2,11 @@ package im.actor.push
 
 import akka.actor.{ ActorSystem, Props }
 import akka.event.Logging
-import akka.http.scaladsl.Http
+import akka.http.scaladsl._
+import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import com.spingo.op_rabbit._
-import im.actor.push.resource.SubscriptionResource
+import im.actor.push.resource.{ MessageResource, SubscriptionResource }
 import org.flywaydb.core.Flyway
 import slick.driver.PostgresDriver.api._
 import slick.jdbc.hikaricp.HikariCPJdbcDataSource
@@ -20,31 +21,42 @@ object PushServer extends App {
 
   val log = Logging(system, getClass)
 
-  val ds =
-    HikariCPJdbcDataSource.forConfig(
-      system.settings.config.getConfig("postgresql"),
-      null,
-      "postgres",
-      getClass.getClassLoader
-    )
+  try {
 
-  val flyway = new Flyway()
-  flyway.setDataSource(ds.ds)
-  flyway.migrate()
+    val ds =
+      HikariCPJdbcDataSource.forConfig(
+        system.settings.config.getConfig("sql"),
+        null,
+        "postgres",
+        getClass.getClassLoader
+      )
 
-  val db = Database.forDataSource(ds.ds)
+    val flyway = new Flyway()
+    flyway.setDataSource(ds.ds)
+    flyway.setBaselineOnMigrate(true)
+    flyway.migrate()
 
-  val rabbitControl = system.actorOf(Props[RabbitControl])
+    val db = Database.forDataSource(ds.ds)
 
-  val topicRes = new SubscriptionResource(system, rabbitControl, db).route
+    val rabbitControl = system.actorOf(Props[RabbitControl])
 
-  val route = topicRes
+    val subsRes = new SubscriptionResource(system, rabbitControl, db).route
+    val msgRes = new MessageResource(system, rabbitControl, db).route
 
-  val bindFuture = Http(system).bindAndHandle(route, "0.0.0.0", 9000)
+    val route = msgRes ~ subsRes
 
-  bindFuture onFailure {
-    case e ⇒
-      log.error(e, "Failed to bind")
+    val bindFuture = Http(system).bindAndHandle(route, "0.0.0.0", 9000)
+
+    bindFuture onFailure {
+      case e ⇒
+        system.terminate()
+        log.error(e, "Failed to bind")
+    }
+
+  } catch {
+    case e: Throwable ⇒
+      log.error(e, "Failed to start")
+      system.terminate()
   }
 
   Await.result(system.whenTerminated, Duration.Inf)
