@@ -27,3 +27,28 @@ libraryDependencies ++= Seq(
 )
 
 mainClass in Compile := Some("im.actor.push.PushServer")
+
+enablePlugins(JavaServerAppPackaging)
+enablePlugins(DockerPlugin)
+
+packageName in Docker := "actor-push"
+version in Docker := (version in ThisBuild).value
+dockerExposedPorts := Seq(9000)
+dockerUpdateLatest := true
+dockerRepository := Some("actor-push")
+
+import ReleaseTransformations._
+
+releaseProcess := Seq[ReleaseStep](
+  checkSnapshotDependencies,
+  inquireVersions,
+  runTest,
+  setReleaseVersion,
+  commitReleaseVersion,
+  tagRelease,
+  publishArtifacts,
+  setNextVersion,
+  ReleaseStep(releaseStepTaskAggregated(publishLocal in Docker)),
+  commitNextVersion,
+  pushChanges
+)
