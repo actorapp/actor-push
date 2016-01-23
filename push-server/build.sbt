@@ -48,7 +48,7 @@ releaseProcess := Seq[ReleaseStep](
   setReleaseVersion,
   commitReleaseVersion,
   tagRelease,
-  ReleaseStep(releaseStepCommand("docker:publishLocal")),
+  ReleaseStep(releaseStepCommand("docker:publish")),
   setNextVersion,
   commitNextVersion,
   pushChanges
