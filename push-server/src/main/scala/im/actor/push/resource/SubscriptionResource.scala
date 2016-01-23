@@ -17,16 +17,16 @@ import scala.concurrent.Future
 
 final case class Data[T](data: T)
 final case class SubscribeResult(
-                                  endpoint: String,
-                                  mqtt: MQTT
-                                )
+  endpoint: String,
+  mqtt:     MQTT
+)
 final case class MQTT(
-                       hosts: Seq[String],
-                       virtualHost: String,
-                       username: String,
-                       password: String,
-                       port: Int
-                     )
+  hosts:       Seq[String],
+  virtualHost: String,
+  username:    String,
+  password:    String,
+  port:        Int
+)
 object MQTT {
   def fromConfig(config: Config): MQTT = {
     MQTT(
