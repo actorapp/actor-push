@@ -35,7 +35,7 @@ packageName in Docker := "actor-push"
 version in Docker := (version in ThisBuild).value
 dockerExposedPorts := Seq(9000)
 dockerUpdateLatest := true
-dockerRepository := Some("actor-push")
+dockerRepository := Some("actor")
 
 import ReleaseTransformations._
 
