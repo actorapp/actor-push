@@ -1,6 +1,7 @@
 package im.actor.push.resource
 
 import akka.actor.{ ActorRef, ActorSystem }
+import akka.event.Logging
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.util.FastFuture

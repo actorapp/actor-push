@@ -13,7 +13,7 @@ val slickV = "3.1.1"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.1",
-  "com.typesafe.akka" %% "akka-http-experimental" % "2.0.1",
+  "com.typesafe.akka" %% "akka-http-experimental" % "2.0.2",
   "de.heikoseeberger" %% "akka-http-circe" % "1.4.1",
   "io.circe" %% "circe-core" % circeV,
   "io.circe" %% "circe-generic" % circeV,

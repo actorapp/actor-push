@@ -46,7 +46,6 @@ object PushServer extends App {
     val route = msgRes ~ subsRes
 
     val bindFuture = Http(system).bindAndHandle(route, "0.0.0.0", 9000)
-
     bindFuture onFailure {
       case e ⇒
         system.terminate()
