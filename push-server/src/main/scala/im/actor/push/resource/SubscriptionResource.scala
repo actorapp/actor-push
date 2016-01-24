@@ -29,7 +29,10 @@ final case class MQTT(
 object MQTT {
   def fromConfig(config: Config): MQTT = {
     MQTT(
-      hosts = config.getStringList("op-rabbit.connection.hosts").toSeq.map(host ⇒ s"tcp://$host:${config.getInt("op-rabbit.connection.port")}"),
+      hosts =
+        config
+          .getStringList("op-rabbit.connection.hosts").toSeq
+          .map(host ⇒ s"tcp://$host:1883"),
       username = config.getString("op-rabbit.connection.username"),
       password = config.getString("op-rabbit.connection.password")
     )
