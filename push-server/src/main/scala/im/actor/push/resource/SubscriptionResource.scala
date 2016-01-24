@@ -1,7 +1,6 @@
 package im.actor.push.resource
 
 import akka.actor.{ ActorRef, ActorSystem }
-import akka.event.Logging
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.spingo.op_rabbit._
@@ -18,8 +17,10 @@ import scala.concurrent.Future
 
 final case class Data[T](data: T)
 final case class SubscribeResult(
-  endpoint: String,
-  mqtt:     MQTT
+  endpoint:     String,
+  mqttServer:   MQTT,
+  exchangeName: String,
+  routingKey:   String
 )
 final case class MQTT(
   hosts:       Seq[String],
@@ -53,7 +54,9 @@ final class SubscriptionResource(system: ActorSystem, rabbitControl: ActorRef, d
         onSuccess(subscribe(subscription)) {
           complete(Data(SubscribeResult(
             endpoint = subscription.endpoint(baseUri),
-            mqtt = mqtt
+            mqttServer = mqtt,
+            exchangeName = "amq.topic",
+            routingKey = subscription.topic
           )).asJson)
         }
       }
