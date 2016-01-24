@@ -53,7 +53,7 @@ final class SubscriptionResource(system: ActorSystem, rabbitControl: ActorRef, d
           complete(Data(SubscribeResult(
             endpoint = subscription.endpoint(baseUri),
             mqttServer = mqtt,
-            topic = subscription.topic
+            topic = subscription.topicMqtt
           )).asJson)
         }
       }
@@ -63,10 +63,6 @@ final class SubscriptionResource(system: ActorSystem, rabbitControl: ActorRef, d
   private def subscribe(subscription: model.Subscription): Future[Unit] = {
     for {
       _ ← db.run(SubscriptionRepo.create(subscription))
-    } yield {
-      val topicName = subscription.topic
-      rabbitControl ! Message.topic("create", routingKey = topicName)
-      ()
-    }
+    } yield ()
   }
 }

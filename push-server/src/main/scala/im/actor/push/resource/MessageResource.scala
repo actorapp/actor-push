@@ -32,8 +32,11 @@ final class MessageResource(system: ActorSystem, rabbitControl: ActorRef, db: Da
           onSuccess(checkSubscription(appId, subId)) {
             case Some(subscription) ⇒
               if (subscription.appId == tokAppId) {
-                val topicName = subscription.topic
-                rabbitControl ! Message.topic(entity.asJson.noSpaces, routingKey = topicName)
+                val topicName = subscription.topicAmqp
+                val message = entity.asJson.noSpaces
+
+                log.debug("Sending: {} with routingKey: {}", message, topicName)
+                rabbitControl ! Message.topic(message, routingKey = topicName)
                 complete(StatusCodes.Created)
               } else {
                 log.warning("Subscription id does not match token id")

@@ -4,7 +4,9 @@ import java.net.URLEncoder
 import java.util.UUID
 
 final case class Subscription(appId: Int, id: String) {
-  def topic = s"actor/$appId/subscription/$id"
+  def topicMqtt = topic('/')
+  def topicAmqp = topic('.')
+  def topic(sep: Char) = s"actor${sep}$appId${sep}subscription${sep}$id"
 
   def endpoint(baseUri: String) = s"$baseUri/apps/$appId/subscriptions/${URLEncoder.encode(id, "UTF-8")}"
 }
