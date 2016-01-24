@@ -17,19 +17,19 @@ import scala.concurrent.Future
 
 final case class Data[T](data: T)
 final case class SubscribeResult(
-  endpoint:     String,
-  mqttServer:   MQTT,
-  topic: String
+  endpoint:   String,
+  mqttServer: MQTT,
+  topic:      String
 )
 final case class MQTT(
-  hosts:       Seq[String],
-  username:    String,
-  password:    String
+  hosts:    Seq[String],
+  username: String,
+  password: String
 )
 object MQTT {
   def fromConfig(config: Config): MQTT = {
     MQTT(
-      hosts = config.getStringList("op-rabbit.connection.hosts").toSeq.map(host => s"tcp://$host:${config.getInt("op-rabbit.connection.port")}"),
+      hosts = config.getStringList("op-rabbit.connection.hosts").toSeq.map(host ⇒ s"tcp://$host:${config.getInt("op-rabbit.connection.port")}"),
       username = config.getString("op-rabbit.connection.username"),
       password = config.getString("op-rabbit.connection.password")
     )
