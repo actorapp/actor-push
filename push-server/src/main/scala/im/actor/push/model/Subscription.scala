@@ -15,7 +15,7 @@ object Subscription {
   def generate(appId: Int): Subscription = {
     val ba = new Array[Byte](32)
     ThreadLocalSecureRandom.current().nextBytes(ba)
-    val id = Base64.getEncoder.encodeToString(ba)
+    val id = Base64.getEncoder.encodeToString(ba).replace("=", "").replace("/", "")
     Subscription(appId, id)
   }
 }
