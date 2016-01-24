@@ -19,24 +19,19 @@ final case class Data[T](data: T)
 final case class SubscribeResult(
   endpoint:     String,
   mqttServer:   MQTT,
-  exchangeName: String,
-  routingKey:   String
+  topic: String
 )
 final case class MQTT(
   hosts:       Seq[String],
-  virtualHost: String,
   username:    String,
-  password:    String,
-  port:        Int
+  password:    String
 )
 object MQTT {
   def fromConfig(config: Config): MQTT = {
     MQTT(
-      hosts = config.getStringList("op-rabbit.connection.hosts").toSeq,
-      virtualHost = config.getString("op-rabbit.connection.virtual-host"),
+      hosts = config.getStringList("op-rabbit.connection.hosts").toSeq.map(host => s"tcp://$host:${config.getInt("op-rabbit.connection.port")}"),
       username = config.getString("op-rabbit.connection.username"),
-      password = config.getString("op-rabbit.connection.password"),
-      port = config.getInt("op-rabbit.connection.port")
+      password = config.getString("op-rabbit.connection.password")
     )
   }
 }
@@ -55,8 +50,7 @@ final class SubscriptionResource(system: ActorSystem, rabbitControl: ActorRef, d
           complete(Data(SubscribeResult(
             endpoint = subscription.endpoint(baseUri),
             mqttServer = mqtt,
-            exchangeName = "amq.topic",
-            routingKey = subscription.topic
+            topic = subscription.topic
           )).asJson)
         }
       }
