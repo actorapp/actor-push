@@ -8,18 +8,15 @@ curl -XPOST https://push.actor.im/apps/31337/subscriptions
 
 {
   "data": {
-    "endpoint": "https://push.actor.im/apps/31337/subscriptions/gx1jfzIDjfyVPySxMABgHGofzCp%2F2pm0REovU0DdhHk%3D",
+    "endpoint": "https://push.actor.im/apps/31337/subscriptions/gx1jfzIDjfyVPySxMABgHGofzCp2pm0REovU0DdhHk",
     "mqttServer": {
       "hosts": [
-        "104.155.92.40"
-      ],
-      "virtualHost": "/",
+        "tcp://104.155.92.40:5672"
+      ]
       "username": "actor-client",
       "password": "ohgh5eeC",
-      "port": 5672
     },
-    "exchangeName": "amq.topic",
-    "routingKey": "actor.31337.subscription.gx1jfzIDjfyVPySxMABgHGofzCp/2pm0REovU0DdhHk="
+    "topic": "actor.31337.subscription.gx1jfzIDjfyVPySxMABgHGofzCp2pm0REovU0DdhHk"
   }
 }
 ```
