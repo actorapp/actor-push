@@ -7,7 +7,7 @@ import akka.http.scaladsl.server._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.directives.Credentials
 import akka.http.scaladsl.util.FastFuture
-import com.spingo.op_rabbit.Message
+import com.spingo.op_rabbit.{ Message, properties }
 import de.heikoseeberger.akkahttpcirce.CirceSupport
 import im.actor.push.model
 import im.actor.push.repo.{ SubscriptionRepo, TokenRepo }
@@ -36,7 +36,12 @@ final class MessageResource(system: ActorSystem, rabbitControl: ActorRef, db: Da
                 val message = entity.asJson.noSpaces
 
                 log.debug("Sending: {} with routingKey: {}", message, topicName)
-                rabbitControl ! Message.topic(message, routingKey = topicName)
+                rabbitControl !
+                  Message.topic(
+                    message,
+                    routingKey = topicName,
+                    properties = Seq(properties.DeliveryModePersistence(persistent = false))
+                  )
                 complete(StatusCodes.Created)
               } else {
                 log.warning("Subscription id does not match token id")
