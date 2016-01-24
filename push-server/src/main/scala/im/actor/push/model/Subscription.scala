@@ -1,9 +1,7 @@
 package im.actor.push.model
 
 import java.net.URLEncoder
-import java.util.Base64
-
-import im.actor.push.util.ThreadLocalSecureRandom
+import java.util.UUID
 
 final case class Subscription(appId: Int, id: String) {
   def topic = s"actor.$appId.subscription.$id"
@@ -12,10 +10,5 @@ final case class Subscription(appId: Int, id: String) {
 }
 
 object Subscription {
-  def generate(appId: Int): Subscription = {
-    val ba = new Array[Byte](32)
-    ThreadLocalSecureRandom.current().nextBytes(ba)
-    val id = Base64.getEncoder.encodeToString(ba).replace("=", "").replace("/", "")
-    Subscription(appId, id)
-  }
+  def generate(appId: Int): Subscription = Subscription(appId, UUID.randomUUID().toString)
 }
